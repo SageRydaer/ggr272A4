@@ -69,15 +69,16 @@
       const eat_buffer_source = new carto.source.Dataset('eateries_as_buffer');
       const eat_buffer_viz = new carto.Viz(`
         color: rgba(255,0,0,0.5)
-        width: 45
+        width: ramp(zoomrange([12.5,12.6]),[45,0])
         strokeWidth: 0
         `);
       const eateries_as_buffer = new carto.Layer('eat_buffer_source',eat_buffer_source,eat_buffer_viz);
 
       const Eatlocs_source = new carto.source.Dataset('eateriesnoxmin');
       const Eatlocs_viz = new carto.Viz(`
-        color: rgba(255,0,0,1)
-        width: 8
+        color: rgba(255,0,0,0.7)
+        width: ramp(zoomrange([12.5,12.6]),[0,8])
+        strokeWidth: ramp(zoomrange([12.5,12.6]),[0,0.5])
         `)
       const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
 
