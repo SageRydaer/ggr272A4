@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>GGR272 Assignment 4</title>
+
+      <!-- Load CARTO VL JS -->
+      <script src="https://libs.cartocdn.com/carto-vl/v1.2.4/carto-vl.min.js"></script>
+      <!-- Load Mapbox GL -->
+      <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
+      <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet" />
+      <!-- Load CARTO VL Styles -->
+      <link href="https://carto.com/developers/carto-vl/v1.4.2/examples/maps/style.css" rel="stylesheet">
+      <style>
+        #map {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>
+    </body>
+    <script>
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: carto.basemaps.voyager,
+        center: [-79.6441, 43.5991],
+        zoom: 11,
+        scrollZoom: true
+      });
+
+      const nav = new mapboxgl.NavigationControl({
+        showCompass: true
+      });
+
+      map.addControl(nav, 'top-left');
+      map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+
+      // Define user
+      carto.setDefaultAuth({
+        username: 'sagerydaer',
+        apiKey: 'default_public'
+      });
+
+      const boundary_source = new carto.source.Dataset('municipal_boundary');
+      const boundary_viz = new carto.Viz();
+      const municipal_boundary = new carto.Layer('municipal_boundary', boundary_source, boundary_viz);
+
+      const rent_source = new carto.source.Dataset('average_rent');
+      const rent_viz = new carto.Viz(`
+        color: ramp(globalEqIntervals($col1, 5), teal)
+        strokeColor: rgba(0,0,0,0.2)
+        strokeWidth: 1
+      `);
+      const average_rent = new carto.Layer('average_rent', rent_source, rent_viz);
+
+      const pse_source = new carto.source.Dataset('export_output_2');
+      const pse_viz = new carto.Viz(`
+        color: red
+        strokeWidth: 1
+        
+        `);
+
+
+      municipal_boundary.addTo(map, 'watername_ocean');
+      average_rent.addTo(map, 'watername_ocean');
+
+
+
+    </script>
+
+  </html>
