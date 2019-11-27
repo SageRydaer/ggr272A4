@@ -6,8 +6,8 @@
     <!-- Load CARTO VL JS -->
     <script src="https://libs.cartocdn.com/carto-vl/v1.2.4/carto-vl.min.js"></script>
     <!-- Load Mapbox GL -->
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
-    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet"/>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js"></script>
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css" rel="stylesheet"/>
     <!-- Load CARTO VL Styles -->
     <link href="https://carto.com/developers/carto-vl/v1.4.2/examples/maps/style.css" rel="stylesheet">
     <style>
@@ -41,7 +41,8 @@
         </header>
         <section>
             <p class="description open-sans">This map aims to provide students entering their first year of post
-                secondary education with information about and around each campus, as well as the cost of renting in Mississauga.
+                secondary education with information about and around each campus, as well as the cost of renting in
+                Mississauga.
                 Each layer is toggle enabled, as well as more information can be obtained by hovering over elements
                 on the map such as Post Secondary Institutions and Eateries.
             </p>
@@ -57,6 +58,8 @@
         zoom: 10.75,
         scrollZoom: true
     });
+
+    // map.on()
 
     const nav = new mapboxgl.NavigationControl({
         showCompass: true
@@ -99,6 +102,8 @@
         strokeWidth: 1
         @education_center_name: $education_center_name
         @website: $website
+        @pse_lat: $lat_wgs
+        @pse_lon: $long_wgs
         `);
     const pse = new carto.Layer('pse', pse_source, pse_viz);
 
@@ -123,12 +128,23 @@
     const interactivity = new carto.Interactivity(pse);
     interactivity.on('featureHover', displayName);
 
+    map.on('click', 'export_output_2', function (event) {
+        map.flyTo({center: event.features[0].geometry.coordinates});
+        // map.zoomTo(15, {duration: 3000});
+    });
+
     interactivity.on('featureClick', event => {
         if (event.features.length) {
             const feature = event.features[0];
             clickedFeatureId = feature.id;
             // map.center = [event.coordinates.lng, event.coordinates.lat];
             // map.zoom = 15;
+            // const coords = [${feature.pse_lat}];
+            console.log("coords");
+            map.flyTo({
+                center: [event.coordinates.lng, event.coordinates.lat],
+                zoom: 14 // 22.5 is greater than the default maxZoom of 20
+            })
         }
     });
 
