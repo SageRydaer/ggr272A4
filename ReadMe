@@ -10,6 +10,7 @@ Tasks:
 - Layers panel
 - Legend
 - search query
+- add a reset zoom button that zooms back out to the center and default of the map
 
 Problems:
 - popup is at the location of click instead of location of Institution
@@ -19,6 +20,8 @@ Problems:
 -for some reason it is still adding in the usls at the end of the link... need to fix this somehow
     - i think it has to do with the url formatting; needs to begin with `http`
 
+
+URL Current Workspace
 https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-click
 https://carto.com/developers/carto-vl/examples/#example-scaled-width
 https://carto.com/developers/carto-vl/examples/#example-feature-click
