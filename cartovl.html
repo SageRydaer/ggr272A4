@@ -1,98 +1,181 @@
 <!DOCTYPE html>
-  <html>
-    <head>
-      <title>GGR272 Assignment 4</title>
+<html>
+<head>
+    <title>GGR272 Assignment 4</title>
 
-      <!-- Load CARTO VL JS -->
-      <script src="https://libs.cartocdn.com/carto-vl/v1.2.4/carto-vl.min.js"></script>
-      <!-- Load Mapbox GL -->
-      <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
-      <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet" />
-      <!-- Load CARTO VL Styles -->
-      <link href="https://carto.com/developers/carto-vl/v1.4.2/examples/maps/style.css" rel="stylesheet">
-      <style>
+    <!-- Load CARTO VL JS -->
+    <script src="https://libs.cartocdn.com/carto-vl/v1.2.4/carto-vl.min.js"></script>
+    <!-- Load Mapbox GL -->
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet"/>
+    <!-- Load CARTO VL Styles -->
+    <link href="https://carto.com/developers/carto-vl/v1.4.2/examples/maps/style.css" rel="stylesheet">
+    <style>
         #map {
-          position: absolute;
-          width: 100%;
-          height: 100%;
+            position: absolute;
+            width: 100%;
+            height: 100%;
         }
-      </style>
-    </head>
-    <body>
-      <div id="map"></div>
-    </body>
-    <script>
-      const map = new mapboxgl.Map({
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<aside class="toolbox">
+    <div class="box">
+        <header>
+            <h1>Institution</h1>
+        </header>
+        <section>
+            <p class="description open-sans">Click on a Institution to learn more about it</p>
+            <div id="controls">
+                <div id="content"></div>
+            </div>
+        </section>
+        <footer class="js-footer"></footer>
+    </div>
+    <div class="box">
+        <header>
+            <h1>
+                Carto Map Ported with JavaScript
+            </h1>
+        </header>
+        <section>
+            <p class="description open-sans">This map aims to provide students entering their first year of post
+                secondary education with information about and around each campus, as well as the cost of renting in Mississauga.
+                Each layer is toggle enabled, as well as more information can be obtained by hovering over elements
+                on the map such as Post Secondary Institutions and Eateries.
+            </p>
+        </section>
+    </div>
+</aside>
+</body>
+<script>
+    const map = new mapboxgl.Map({
         container: 'map',
         style: carto.basemaps.voyager,
         center: [-79.6441, 43.5991],
         zoom: 10.75,
         scrollZoom: true
-      });
+    });
 
-      const nav = new mapboxgl.NavigationControl({
+    const nav = new mapboxgl.NavigationControl({
         showCompass: true
-      });
+    });
 
-      map.addControl(nav, 'top-left');
-      map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+    // Define pop-up
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
 
-      // Define user
-      carto.setDefaultAuth({
+    map.addControl(nav, 'top-left');
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+
+    // Define user
+    carto.setDefaultAuth({
         username: 'sagerydaer',
         apiKey: 'default_public'
-      });
+    });
 
-      // Define layer
-      const boundary_source = new carto.source.Dataset('municipal_boundary');
-      const boundary_viz = new carto.Viz();
-      const municipal_boundary = new carto.Layer('municipal_boundary', boundary_source, boundary_viz);
+    // Define layer
+    const boundary_source = new carto.source.Dataset('municipal_boundary');
+    const boundary_viz = new carto.Viz();
+    const municipal_boundary = new carto.Layer('municipal_boundary', boundary_source, boundary_viz);
 
-      // Define layer
-      const rent_source = new carto.source.Dataset('average_rent');
-      const rent_viz = new carto.Viz(`
+    // Define layer
+    const rent_source = new carto.source.Dataset('average_rent');
+    const rent_viz = new carto.Viz(`
         color: ramp(globalEqIntervals($col1, 5), teal)
         strokeColor: rgba(0,0,0,0.2)
         strokeWidth: 1
       `);
-      const average_rent = new carto.Layer('average_rent', rent_source, rent_viz);
+    const average_rent = new carto.Layer('average_rent', rent_source, rent_viz);
 
-      // Define layer
-      const pse_source = new carto.source.Dataset('export_output_2');
-      const pse_viz = new carto.Viz(`
-        color: rgba(0,0,255,0.5)
+    // Define layer and variables for interactivity
+    const pse_source = new carto.source.Dataset('export_output_2');
+    const pse_viz = new carto.Viz(`
+        color: rgba(136,77,238,0.5)
+        width: 8
         strokeWidth: 1
+        @education_center_name: $education_center_name
+        @website: $website
         `);
-      const pse = new carto.Layer('pse', pse_source, pse_viz);
+    const pse = new carto.Layer('pse', pse_source, pse_viz);
 
-      // Define layer
-      const eat_buffer_source = new carto.source.Dataset('eateries_as_buffer');
-      const eat_buffer_viz = new carto.Viz(`
-        color: rgba(255,0,0,0.5)
+    // Define layer
+    const eat_buffer_source = new carto.source.Dataset('eateries_as_buffer');
+    const eat_buffer_viz = new carto.Viz(`
+        color: rgba(238,77,90,0.75)
         width: ramp(zoomrange([12.5,12.6]),[45,0])
         strokeWidth: 0
         `);
-      const eateries_as_buffer = new carto.Layer('eat_buffer_source',eat_buffer_source,eat_buffer_viz);
+    const eateries_as_buffer = new carto.Layer('eat_buffer_source', eat_buffer_source, eat_buffer_viz);
 
-      const Eatlocs_source = new carto.source.Dataset('eateriesnoxmin');
-      const Eatlocs_viz = new carto.Viz(`
+    const Eatlocs_source = new carto.source.Dataset('eateriesnoxmin');
+    const Eatlocs_viz = new carto.Viz(`
         color: rgba(255,0,0,0.7)
-        width: ramp(zoomrange([12.5,12.6]),[0,8])
+        width: ramp(zoomrange([12.5,12.6]),[0,10])
         strokeWidth: ramp(zoomrange([12.5,12.6]),[0,0.5])
-        `)
-      const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
+        `);
+    const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
 
-      // Add the layers to the map
-      municipal_boundary.addTo(map, 'watername_ocean');
-      average_rent.addTo(map, 'watername_ocean');
-      eateries_as_buffer.addTo(map, 'watername_ocean');
-      eats_locations.addTo(map,'watername_ocean');
-      pse.addTo(map, 'watername_ocean');
+    // define popup Interactivity so that users will see more details for INSTITUTIONS
+    const interactivity = new carto.Interactivity(pse);
+    interactivity.on('featureHover', displayName);
 
+    interactivity.on('featureClick', event => {
+        if (event.features.length) {
+            const feature = event.features[0];
+            clickedFeatureId = feature.id;
+            // map.center = [event.coordinates.lng, event.coordinates.lat];
+            // map.zoom = 15;
+        }
+    });
 
+    // Add the layers to the map
+    municipal_boundary.addTo(map, 'watername_ocean');
+    average_rent.addTo(map, 'watername_ocean');
+    eateries_as_buffer.addTo(map, 'watername_ocean');
+    eats_locations.addTo(map, 'watername_ocean');
+    pse.addTo(map, 'watername_ocean');
 
+    interactivity.on('featureClick', updatePopup);
 
+    function updatePopup(event) {
+        if (event.features.length > 0) {
+            const vars = event.features[0].variables;
+            popup.setHTML(`
+                    <div>
+                        <h3 class ="h3">${vars.education_center_name.value}</h3>
+                        <p class="description open-sans">Website: <a target="_blank" href="${vars.website.value}"> ${vars.website.value}</a></h3>
+                    </div>
+                `);
+            popup.setLngLat([event.coordinates.lng, event.coordinates.lat]);
+            if (!popup.isOpen()) {
+                popup.addTo(map);
+            }
+            // map.center = [event.coordinates.lng, event.coordinates.lat];
+            // map.zoom = 15;
+        } else {
+            popup.remove();
+            // map.center = [-79.6441, 43.5991];
+            // map.zoom = 10.8;
+        }
+    }
 
+    //pse.addTo(map, 'watername_ocean');
 
-    </script>
-  </html>
+    function displayName(event) {
+        let content = '';
+        for (let feature of event.features) {
+            content += `
+            <div class="container">
+              <h3 class="h3">${feature.variables.education_center_name.value}</h3>
+            </div>
+          `;
+        }
+        document.getElementById('content').innerHTML = content;
+    }
+
+</script>
+</html>
