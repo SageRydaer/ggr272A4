@@ -9,8 +9,15 @@ All layers are added
 Tasks:
 - Layers panel
 - Legend
-- 
+- search query
 
+Problems:
+- popup is at the location of click instead of location of Institution
+- Icons are pretty small
+    - when you hover it should expand
+    - when you click and it zooms in, it should keep
+-for some reason it is still adding in the usls at the end of the link... need to fix this somehow
+    - i think it has to do with the url formatting; needs to begin with `http`
 
 https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-click
 https://carto.com/developers/carto-vl/examples/#example-scaled-width
