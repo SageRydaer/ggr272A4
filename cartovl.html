@@ -48,7 +48,26 @@
             </p>
         </section>
     </div>
+<!--    <button class="box">Reset</button>-->
 </aside>
+<style>
+    #reset {
+        display: block;
+        position: relative;
+        margin: 10px auto;
+        width: 25%;
+        height: -40px;
+        padding: 10px;
+        border: none;
+        border-radius: 3px;
+        font-size: 12px;
+        text-align: center;
+        color: #fff;
+        background: #ee8a65;
+        opacity: 80%;
+    }
+</style>
+<button id="reset">Reset Zoom</button>
 </body>
 <script>
     const map = new mapboxgl.Map({
@@ -131,10 +150,12 @@
     interactivity.on('featureClick', event => {
         if (event.features.length) {
             const feature = event.features[0];
+            const lon = feature.variables.pse_lon.value;
+            const lat = feature.variables.pse_lat.value;
             clickedFeatureId = feature.id;
             map.flyTo({
-                center: [event.coordinates.lng, event.coordinates.lat],
-                zoom: 14 // 22.5 is greater than the default maxZoom of 20
+                center: [lon, lat],
+                zoom: 14
             })
         }
     });
@@ -148,18 +169,10 @@
 
     interactivity.on('featureClick', updatePopup);
 
-    // map.on('click', 'places', function (e) {
-    //     var coordinates = e.features[0].geometry.coordinates.slice();
-    //     var description = e.features[0].properties.description;
-
 
     function updatePopup(event) {
         if (event.features.length > 0) {
             const vars = event.features[0].variables;
-            // const long = [];
-            // long.push(${vars.pse_lon.value});
-            // long.push(${vars.pse_lat.value});
-            // var coords = long.slice();
             popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.education_center_name.value}</h3>
@@ -171,23 +184,18 @@
             const lat = vars.pse_lat.value;
 
             popup.setLngLat([lon, lat]);
-            // popup.setLngLat([event.coordinates.lng, event.coordinates.lat]);
             if (!popup.isOpen()) {
                 popup.addTo(map);
             }
-            // map.center = [event.coordinates.lng, event.coordinates.lat];
-            // map.zoom = 15;
         } else {
             popup.remove();
-            // map.center = [-79.6441, 43.5991];
-            // map.zoom = 10.8;
         }
     }
 
-    //pse.addTo(map, 'watername_ocean');
 
     function displayName(event) {
         let content = '';
+
         for (let feature of event.features) {
             content += `
             <div class="container">
@@ -197,6 +205,15 @@
         }
         document.getElementById('content').innerHTML = content;
     }
+
+    document.getElementById('reset').addEventListener('click', function () {
+        // Fly to a random location by offsetting the point -74.50, 40
+        // by up to 5 degrees.
+        map.flyTo({
+            center: [-79.6441, 43.5991],
+            zoom: 10.75
+        });
+    });
 
 </script>
 </html>
