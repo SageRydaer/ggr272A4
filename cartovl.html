@@ -154,26 +154,31 @@
     interactivity2.on('featureClick', updatePopup);
 
     // eateries popup function (same structure as institution structure
-    // function eateriesPopup(event) {
+    // function updatePopup(event) {
+    //     console.log(event);
     //     if (event.features.length > 0) {
     //         const vars = event.features[0].variables;
-    //         // console.log(vars.name.value);
-    //         eatpop.setHTML(`
+    //         console.log(vars);
+    //         if (typeof vars.education_center_name === 'undefined') {
+    //             console.log("it's undefined");
+    //         }
+    //         // console.log(vars[0]);
+    //         popup.setHTML(`
     //                 <div>
-    //                     <h3 class ="h3">${vars.name.value}</h3>
-    //                     <p class="description open-sans">Website: ${vars.addrs.value}</a></h3>
+    //                     <h3 class ="h3">${vars.education_center_name.value}</h3>
+    //                     <p class="description open-sans">Website: ${vars.website.value}</a></h3>
     //                 </div>
     //             `);
     //
-    //         const lon = vars.xlon.value;
-    //         const lat = vars.ylat.value;
+    //         const lon = vars.pse_lon.value;
+    //         const lat = vars.pse_lat.value;
     //
-    //         eatpop.setLngLat([lon, lat]);
-    //         if (!eatpop.isOpen()) {
-    //             eatpop.addTo(map);
+    //         popup.setLngLat([lon, lat]);
+    //         if (!popup.isOpen()) {
+    //             popup.addTo(map);
     //         }
     //     } else {
-    //         eatpop.remove();
+    //         popup.remove();
     //     }
     // }
 
@@ -208,7 +213,7 @@
         if (event.features.length > 0) {
             const vars = event.features[0].variables;
             console.log(vars);
-            if (vars.includes(education_center_name)) {
+            if (typeof vars.education_center_name.value !== 'undefined') {
                 popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.education_center_name.value}</h3>
