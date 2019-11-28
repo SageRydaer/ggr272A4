@@ -88,7 +88,7 @@
     });
 
     // Eateries pop-ip
-    const eatpop = mapboxgl.Popup({
+    const popupeat = mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false
     });
@@ -150,8 +150,7 @@
         `);
     const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
 
-    const interactivity2 = new carto.Interactivity(eats_locations);
-    interactivity2.on('featureClick', updatePopup);
+
 
     // eateries popup function (same structure as institution structure
     // function updatePopup(event) {
@@ -182,9 +181,18 @@
     //     }
     // }
 
+
+    const interactivity2 = new carto.Interactivity(eats_locations);
+    interactivity2.on('featureHover', updatePopup);
+
     // define popup Interactivity so that users will see more details for INSTITUTIONS
     const interactivity = new carto.Interactivity(pse);
     interactivity.on('featureHover', displayName);
+
+    const interactivityEat = new carto.Interactivity(eats_locations);
+    interactivityEat.on('featureHover', displayPopEat);
+
+    interactivity.on('featureHover', updatePopup);
 
     interactivity.on('featureClick', event => {
         if (event.features.length) {
@@ -206,14 +214,13 @@
     eats_locations.addTo(map, 'watername_ocean');
     pse.addTo(map, 'watername_ocean');
 
-    interactivity.on('featureClick', updatePopup);
 
 
     function updatePopup(event) {
         if (event.features.length > 0) {
             const vars = event.features[0].variables;
-            console.log(vars);
-            if (typeof vars.education_center_name.value !== 'undefined') {
+            // console.log(vars);
+            if (typeof vars.education_center_name !== 'undefined') {
                 popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.education_center_name.value}</h3>
@@ -229,6 +236,17 @@
                     popup.addTo(map);
                 }
             } else {
+                // THIS WORKS, BUT DOES NOT DISPLAY
+                console.log(vars.name.value);
+                let content = '';
+                content += `
+                <div class="container">
+                    <h3 class="h3">${vars.name.value}</h3>
+                </div>
+                `;
+                document.getElementById('content').innerHTML = content;
+
+                popup.remove();
                 popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.name.value}</h3>
@@ -244,20 +262,58 @@
                     popup.addTo(map);
                 }
             }
+            // popup.remove();
         } else {
             popup.remove();
         }
     }
 
+    function displayPopEat(event) {
+        if ('name' in event.features) {
+            const vars = event.features[0].variables;
+            console.log(vars);
+
+            popupeat.setHTML(`
+                    <div>
+                        <h3 class ="h3">${feature.variables.name.value}</h3>
+                        <p class="description open-sans">Address: ${vars.addrs.value}</a></h3>
+                    </div>
+                `);
+
+            const lon = vars.pse_lon.value;
+            const lat = vars.pse_lat.value;
+
+            popupeat.setLngLat([lon, lat]);
+            if (!popupeat.isOpen()) {
+                popupeat.addTo(map);
+            }
+        } else {
+            popup.remove();
+        }
+    }
+
+    // function displayEatery(event) {
+    //     let content = '';
+    //     for (let feature of event.features) {
+    //         console.log(feature.variables.name.value);
+    //         content += `
+    //         <div class="container">
+    //             <h3 class="h3">${feature.variables.name.value}</h3>
+    //         </div>
+    //         `;
+    //     }
+    //     document.getElementById('content').innerHTML = content;
+    // }
+
+    // DISPLAYS THE NAME OF THE INSTITUTION IN THE TOP RIGHT BOX/CORNER ON HOVER
     function displayName(event) {
         let content = '';
-
         for (let feature of event.features) {
-            content += `
-            <div class="container">
-              <h3 class="h3">${feature.variables.education_center_name.value}</h3>
-            </div>
-          `;
+                content += `
+                <div class="container">
+                    <h3 class="h3">${feature.variables.education_center_name.value}</h3>
+                </div>
+                `;
         }
         document.getElementById('content').innerHTML = content;
     }
