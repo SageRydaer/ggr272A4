@@ -150,49 +150,15 @@
         `);
     const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
 
-
-
-    // eateries popup function (same structure as institution structure
-    // function updatePopup(event) {
-    //     console.log(event);
-    //     if (event.features.length > 0) {
-    //         const vars = event.features[0].variables;
-    //         console.log(vars);
-    //         if (typeof vars.education_center_name === 'undefined') {
-    //             console.log("it's undefined");
-    //         }
-    //         // console.log(vars[0]);
-    //         popup.setHTML(`
-    //                 <div>
-    //                     <h3 class ="h3">${vars.education_center_name.value}</h3>
-    //                     <p class="description open-sans">Website: ${vars.website.value}</a></h3>
-    //                 </div>
-    //             `);
-    //
-    //         const lon = vars.pse_lon.value;
-    //         const lat = vars.pse_lat.value;
-    //
-    //         popup.setLngLat([lon, lat]);
-    //         if (!popup.isOpen()) {
-    //             popup.addTo(map);
-    //         }
-    //     } else {
-    //         popup.remove();
-    //     }
-    // }
-
-
-    const interactivity2 = new carto.Interactivity(eats_locations);
-    interactivity2.on('featureHover', updatePopup);
-
     // define popup Interactivity so that users will see more details for INSTITUTIONS
     const interactivity = new carto.Interactivity(pse);
     interactivity.on('featureHover', displayName);
+    interactivity.on('featureHover', updatePopup);
 
     const interactivityEat = new carto.Interactivity(eats_locations);
-    interactivityEat.on('featureHover', displayPopEat);
+    interactivityEat.on('featureHover', displayEatery);
+    interactivityEat.on('featureHover', updateEatery);
 
-    interactivity.on('featureHover', updatePopup);
 
     interactivity.on('featureClick', event => {
         if (event.features.length) {
@@ -214,8 +180,6 @@
     eats_locations.addTo(map, 'watername_ocean');
     pse.addTo(map, 'watername_ocean');
 
-
-
     function updatePopup(event) {
         if (event.features.length > 0) {
             const vars = event.features[0].variables;
@@ -236,68 +200,60 @@
                 if (!popup.isOpen()) {
                     popup.addTo(map);
                 }
-            } else {
-                // THIS WORKS, BUT DOES NOT DISPLAY
-                console.log(vars.name.value);
+            }
+        } else {
+            popup.remove();
+        }
+    }
 
-                popup.setHTML(`
+    function updateEatery(event) {
+        if (event.features.length > 0) {
+            const vars = event.features[0].variables;
+            console.log(vars.name.value);
+
+            popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.name.value}</h3>
-                        <p class="description open-sans">Address: ${vars.addrs.value}</p>
+
                     </div>
                 `);
 
-                const lon = vars.xlon.value;
-                const lat = vars.ylat.value;
+            const lon = vars.xlon.value;
+            const lat = vars.ylat.value;
 
-                console.log(lon, lat);
-
-                popup.setLngLat([lon, lat]);
-                if (!popup.isOpen()) {
-                    popup.addTo(map);
-                }
-            }
-            // popup.remove();
-        } else {
-            popup.remove();
-        }
-    }
-
-    function displayPopEat(event) {
-        if ('name' in event.features) {
-            const vars = event.features[0].variables;
-            console.log(vars);
-
-            popupeat.setHTML(`
-                    <div>
-                        <h3 class ="h3">${feature.variables.name.value}</h3>
-                        <p class="description open-sans">Address: ${vars.addrs.value}</a></h3>
-                    </div>
-                `);
-
-            const lon = vars.pse_lon.value;
-            const lat = vars.pse_lat.value;
-
-            popupeat.setLngLat([lon, lat]);
-            if (!popupeat.isOpen()) {
-                popupeat.addTo(map);
+            popup.setLngLat([lon, lat]);
+            if (!popup.isOpen()) {
+                popup.addTo(map);
             }
         } else {
             popup.remove();
         }
     }
 
-    // function displayEatery(event) {
-    //     let content = '';
-    //     for (let feature of event.features) {
-    //         console.log(feature.variables.name.value);
-    //         content += `
-    //         <div class="container">
-    //             <h3 class="h3">${feature.variables.name.value}</h3>
-    //         </div>
-    //         `;
+    // function displayPopEat(event) {
+    //     if (event.features.length > 0) {
+    //         const vars = event.features[0].variables;
+    //         // console.log(vars);
+    //         if (typeof vars.name !== 'undefined') {
+    //             console.log(vars.name.value);
+    //             popup.setHTML(`
+    //                 <div>
+    //                     <h3 class ="h3">${vars.name.value}</h3>
+    //                     <p class="description open-sans">Website: ${vars.addrs.value}</h3>
+    //                 </div>
+    //             `);
+    //
+    //             const lon = vars.xlon.value;
+    //             const lat = vars.ylat.value;
+    //
+    //             popup.setLngLat([lon, lat]);
+    //             if (!popup.isOpen()) {
+    //                 popup.addTo(map);
+    //             }
+    //         }
+    //     } else {
+    //         popup.remove();
     //     }
-    //     document.getElementById('content').innerHTML = content;
     // }
 
     // DISPLAYS THE NAME OF THE INSTITUTION IN THE TOP RIGHT BOX/CORNER ON HOVER
@@ -307,6 +263,19 @@
                 content += `
                 <div class="container">
                     <h3 class="h3">${feature.variables.education_center_name.value}</h3>
+                </div>
+                `;
+        }
+        document.getElementById('content').innerHTML = content;
+    }
+
+    // DISPLAYS THE NAME OF THE EATERY IN THE TOP RIGHT BOX/CORNER ON HOVER
+    function displayEatery(event) {
+        let content = '';
+        for (let feature of event.features) {
+            content += `
+                <div class="container">
+                    <h3 class="h3">${feature.variables.name.value}</h3>
                 </div>
                 `;
         }
