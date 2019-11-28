@@ -48,7 +48,6 @@
             </p>
         </section>
     </div>
-<!--    <button class="box">Reset</button>-->
 </aside>
 <style>
     #reset {
@@ -78,14 +77,18 @@
         scrollZoom: true
     });
 
-    // map.on()
-
     const nav = new mapboxgl.NavigationControl({
         showCompass: true
     });
 
     // Define pop-up
     const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    // Eateries pop-ip
+    const eatpop = mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false
     });
@@ -140,8 +143,39 @@
         color: rgba(255,0,0,0.7)
         width: ramp(zoomrange([12.5,12.6]),[0,10])
         strokeWidth: ramp(zoomrange([12.5,12.6]),[0,0.5])
+        @addrs: $place_addr
+        @name: $businessna
+        @xlon: $displayx
+        @ylat: $displayy
         `);
     const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
+
+    const interactivity2 = new carto.Interactivity(eats_locations);
+    interactivity2.on('featureClick', updatePopup);
+
+    // eateries popup function (same structure as institution structure
+    // function eateriesPopup(event) {
+    //     if (event.features.length > 0) {
+    //         const vars = event.features[0].variables;
+    //         // console.log(vars.name.value);
+    //         eatpop.setHTML(`
+    //                 <div>
+    //                     <h3 class ="h3">${vars.name.value}</h3>
+    //                     <p class="description open-sans">Website: ${vars.addrs.value}</a></h3>
+    //                 </div>
+    //             `);
+    //
+    //         const lon = vars.xlon.value;
+    //         const lat = vars.ylat.value;
+    //
+    //         eatpop.setLngLat([lon, lat]);
+    //         if (!eatpop.isOpen()) {
+    //             eatpop.addTo(map);
+    //         }
+    //     } else {
+    //         eatpop.remove();
+    //     }
+    // }
 
     // define popup Interactivity so that users will see more details for INSTITUTIONS
     const interactivity = new carto.Interactivity(pse);
@@ -173,25 +207,42 @@
     function updatePopup(event) {
         if (event.features.length > 0) {
             const vars = event.features[0].variables;
-            popup.setHTML(`
+            console.log(vars);
+            if (vars.includes(education_center_name)) {
+                popup.setHTML(`
                     <div>
                         <h3 class ="h3">${vars.education_center_name.value}</h3>
                         <p class="description open-sans">Website: <a target="_blank" href="${vars.website.value}"> ${vars.website.value}</a></h3>
                     </div>
                 `);
 
-            const lon = vars.pse_lon.value;
-            const lat = vars.pse_lat.value;
+                const lon = vars.pse_lon.value;
+                const lat = vars.pse_lat.value;
 
-            popup.setLngLat([lon, lat]);
-            if (!popup.isOpen()) {
-                popup.addTo(map);
+                popup.setLngLat([lon, lat]);
+                if (!popup.isOpen()) {
+                    popup.addTo(map);
+                }
+            } else {
+                popup.setHTML(`
+                    <div>
+                        <h3 class ="h3">${vars.name.value}</h3>
+                        <p class="description open-sans">Address: ${vars.addrs.value}</a></h3>
+                    </div>
+                `);
+
+                const lon = vars.xlon.value;
+                const lat = vars.ylat.value;
+
+                popup.setLngLat([lon, lat]);
+                if (!popup.isOpen()) {
+                    popup.addTo(map);
+                }
             }
         } else {
             popup.remove();
         }
     }
-
 
     function displayName(event) {
         let content = '';
@@ -207,8 +258,6 @@
     }
 
     document.getElementById('reset').addEventListener('click', function () {
-        // Fly to a random location by offsetting the point -74.50, 40
-        // by up to 5 degrees.
         map.flyTo({
             center: [-79.6441, 43.5991],
             zoom: 10.75
