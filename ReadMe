@@ -1,5 +1,11 @@
 Assignment 4 Website version
 
+This is the orginal respository for a Carto based map converted with JavaScript to incorporate a cleaner and more
+intuitive User experience. The map presents the city of Mississauga, for people that are entering a post secondary
+education or institution. It shows average rent (base map), Post Secondary Institution locations, along with all
+eateries within a 1km radius of each eatery. 
+
+
 - online with boundary layer and rent layer
 	- rent layer is not following proper buckets, not sure how to solve
 
@@ -11,10 +17,8 @@ Tasks:
 - Legend
 - search query
 
-
 Problems:
 - Icons are pretty small
-    - when you hover it should expand
     - when you click and it zooms in, it should keep
 -for some reason it is still adding in the urls at the end of the link... need to fix this somehow
     - i think it has to do with the url formatting; needs to begin with `http`

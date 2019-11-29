@@ -91,12 +91,12 @@
         apiKey: 'default_public'
     });
 
-    // Define layer
+    // Define Boundary layer
     const boundary_source = new carto.source.Dataset('municipal_boundary');
     const boundary_viz = new carto.Viz();
     const municipal_boundary = new carto.Layer('municipal_boundary', boundary_source, boundary_viz);
 
-    // Define layer
+    // Define Average Rent layer
     const rent_source = new carto.source.Dataset('average_rent');
     const rent_viz = new carto.Viz(`
         color: ramp(globalEqIntervals($col1, 5), teal)
@@ -105,7 +105,7 @@
       `);
     const average_rent = new carto.Layer('average_rent', rent_source, rent_viz);
 
-    // Define layer and variables for interactivity
+    // Define Post Secondary Education layer and variables for interactivity
     const pse_source = new carto.source.Dataset('export_output_2');
     const pse_viz = new carto.Viz(`
         color: rgba(136,77,238,0.5)
@@ -118,7 +118,7 @@
         `);
     const pse = new carto.Layer('pse', pse_source, pse_viz);
 
-    // Define layer
+    // Define Buffers around Institutions layer
     const eat_buffer_source = new carto.source.Dataset('eateries_as_buffer');
     const eat_buffer_viz = new carto.Viz(`
         color: rgba(238,77,90,0.75)
@@ -126,6 +126,7 @@
         strokeWidth: 0
         `);
     const eateries_as_buffer = new carto.Layer('eat_buffer_source', eat_buffer_source, eat_buffer_viz);
+
 
     const Eatlocs_source = new carto.source.Dataset('eateriesnoxmin');
     const Eatlocs_viz = new carto.Viz(`
