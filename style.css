@@ -17,9 +17,9 @@ body {
   display: block;
   position: absolute;
   margin: 0.25rem auto;
-  bottom: 0;
-  right: 0;
-  width: 50%;
+  bottom: 5px;
+  right: 10px;
+  width: 25%;
   height: 40px;
   padding: 10px;
   border: none;
