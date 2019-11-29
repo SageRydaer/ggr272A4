@@ -15,6 +15,8 @@
             position: absolute;
             width: 100%;
             height: 100%;
+            top: 0;
+            bottom: 0;
         }
     </style>
 </head>
@@ -26,7 +28,7 @@
             <h1>Institution</h1>
         </header>
         <section>
-            <p class="description open-sans">Click on a Institution to learn more about it</p>
+            <p class="description open-sans">Click on a Institution or Eatery to learn more about it</p>
             <div id="controls">
                 <div id="content"></div>
             </div>
@@ -49,23 +51,6 @@
         </section>
     </div>
 </aside>
-<style>
-    #reset {
-        display: block;
-        position: relative;
-        margin: 10px auto;
-        width: 25%;
-        height: -40px;
-        padding: 10px;
-        border: none;
-        border-radius: 3px;
-        font-size: 12px;
-        text-align: center;
-        color: #fff;
-        background: #ee8a65;
-        opacity: 80%;
-    }
-</style>
 <button id="reset">Reset Zoom</button>
 </body>
 <script>
@@ -80,6 +65,10 @@
     const nav = new mapboxgl.NavigationControl({
         showCompass: true
     });
+
+    map.addControl(new mapboxgl.ScaleControl({
+        position: 'bottom-left'
+    }));
 
     // Define pop-up
     const popup = new mapboxgl.Popup({
