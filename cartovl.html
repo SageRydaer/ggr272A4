@@ -122,7 +122,7 @@
     const eat_buffer_source = new carto.source.Dataset('eateries_as_buffer');
     const eat_buffer_viz = new carto.Viz(`
         color: rgba(238,77,90,0.75)
-        width: ramp(zoomrange([12.5,12.6]),[45,0])
+        width: ramp(zoomrange([12.5,12.6]),[sqrt(30*$join_count),0])
         strokeWidth: 0
         `);
     const eateries_as_buffer = new carto.Layer('eat_buffer_source', eat_buffer_source, eat_buffer_viz);
