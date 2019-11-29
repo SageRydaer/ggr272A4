@@ -25,6 +25,17 @@
 <aside class="toolbox">
     <div class="box">
         <header>
+            <h1>Legend</h1>
+        </header>
+        <!-- Add legend data -->
+        <section>
+            <div id="controls">
+                <ul id="content"></ul>
+            </div>
+        </section>
+    </div>
+    <div class="box">
+        <header>
             <h1>Institution</h1>
         </header>
         <section>
@@ -190,7 +201,7 @@
             const lon = vars.xlon.value;
             const lat = vars.ylat.value;
 
-            popup.setLngLat([lon,lat]);
+            popup.setLngLat([lon, lat]);
             if (!popup.isOpen()) {
                 popup.addTo(map);
             }
