@@ -9,7 +9,7 @@
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js"></script>
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css" rel="stylesheet"/>
     <!-- Load CARTO VL Styles -->
-    <link href="https://carto.com/developers/carto-vl/v1.4.2/examples/maps/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <style>
         #map {
             position: absolute;
@@ -83,7 +83,7 @@
 
     // Define pop-up
     const popup = new mapboxgl.Popup({
-        closeButton: false,
+        closeButton: true,
         closeOnClick: false
     });
 
@@ -145,23 +145,82 @@
         strokeWidth: ramp(zoomrange([12.5,12.6]),[0,0.5])
         @addrs: $place_addr
         @name: $businessna
-        @xlon: $displayx
-        @ylat: $displayy
+        @xlon: $x
+        @ylat: $y
         `);
     const eats_locations = new carto.Layer('eateriesnoxmin', Eatlocs_source, Eatlocs_viz);
 
-    // define popup Interactivity so that users will see more details for INSTITUTIONS
-    const interactivity = new carto.Interactivity(pse);
-    interactivity.on('featureHover', displayName);
-    interactivity.on('featureHover', updatePopup);
+    // trying to combine interactivity for both layers since the same functionality is happening
+    const allInteractivity = new carto.Interactivity([pse, eats_locations]);
+    allInteractivity.on('featureClick', updateBoth);
 
-    const interactivityEat = new carto.Interactivity(eats_locations);
-    interactivityEat.on('featureHover', displayEatery);
-    interactivityEat.on('featureHover', updateEatery);
+    // Add the layers to the map
+    municipal_boundary.addTo(map, 'watername_ocean');
+    average_rent.addTo(map, 'watername_ocean');
+    eateries_as_buffer.addTo(map, 'watername_ocean');
+    pse.addTo(map, 'watername_ocean');
+    eats_locations.addTo(map, 'watername_ocean');
 
+    function updateBoth(event) {
+        // console.log(vars);
+        if (event.features[0].layerId === 'pse') {
+            const vars = event.features[0].variables;
+            popup.setHTML(`
+                    <div>
+                        <h3 class ="h3">${vars.education_center_name.value}</h3>
+                        <p class="description open-sans">Website: <a target="_blank" href="${vars.website.value}"> ${vars.website.value}</a></h3>
+                    </div>
+                `);
+            const lon = vars.pse_lon.value;
+            const lat = vars.pse_lat.value;
 
-    interactivity.on('featureClick', event => {
-        if (event.features.length) {
+            popup.setLngLat([lon, lat]);
+            if (!popup.isOpen()) {
+                popup.addTo(map);
+            }
+            let content = '';
+            for (let feature of event.features) {
+                content += `
+                <div class="container">
+                    <h3 class="h3">${feature.variables.education_center_name.value}</h3>
+                </div>
+                `;
+            }
+            document.getElementById('content').innerHTML = content;
+        } else if (event.features[0].layerId === 'eateriesnoxmin') {
+            const vars = event.features[0].variables;
+            console.log(vars.name.value);
+            popup.setHTML(`
+                    <div>
+                        <h3 class ="h3">${vars.name.value}</h3>
+                        <p class="description open-sans">Address: ${vars.addrs.value}</h3>
+                    </div>
+                `);
+
+            const lon = vars.xlon.value;
+            const lat = vars.ylat.value;
+
+            popup.setLngLat([lon,lat]);
+            if (!popup.isOpen()) {
+                popup.addTo(map);
+            }
+            let content = '';
+            for (let feature of event.features) {
+                content += `
+                <div class="container">
+                    <h3 class="h3">${feature.variables.name.value}</h3>
+
+                </div>
+                `;
+            }
+            document.getElementById('content').innerHTML = content;
+        } else {
+            popup.remove();
+        }
+    }
+
+    allInteractivity.on('featureClick', event => {
+        if (event.features[0].layerId === 'pse') {
             const feature = event.features[0];
             const lon = feature.variables.pse_lon.value;
             const lat = feature.variables.pse_lat.value;
@@ -170,117 +229,10 @@
                 center: [lon, lat],
                 zoom: 14
             })
+        } else {
+
         }
     });
-
-    // Add the layers to the map
-    municipal_boundary.addTo(map, 'watername_ocean');
-    average_rent.addTo(map, 'watername_ocean');
-    eateries_as_buffer.addTo(map, 'watername_ocean');
-    eats_locations.addTo(map, 'watername_ocean');
-    pse.addTo(map, 'watername_ocean');
-
-    function updatePopup(event) {
-        if (event.features.length > 0) {
-            const vars = event.features[0].variables;
-            // console.log(vars);
-            if (typeof vars.education_center_name !== 'undefined') {
-                console.log(vars.education_center_name.value);
-                popup.setHTML(`
-                    <div>
-                        <h3 class ="h3">${vars.education_center_name.value}</h3>
-                        <p class="description open-sans">Website: <a target="_blank" href="${vars.website.value}"> ${vars.website.value}</a></h3>
-                    </div>
-                `);
-
-                const lon = vars.pse_lon.value;
-                const lat = vars.pse_lat.value;
-
-                popup.setLngLat([lon, lat]);
-                if (!popup.isOpen()) {
-                    popup.addTo(map);
-                }
-            }
-        } else {
-            popup.remove();
-        }
-    }
-
-    function updateEatery(event) {
-        if (event.features.length > 0) {
-            const vars = event.features[0].variables;
-            console.log(vars.name.value);
-
-            popup.setHTML(`
-                    <div>
-                        <h3 class ="h3">${vars.name.value}</h3>
-
-                    </div>
-                `);
-
-            const lon = vars.xlon.value;
-            const lat = vars.ylat.value;
-
-            popup.setLngLat([lon, lat]);
-            if (!popup.isOpen()) {
-                popup.addTo(map);
-            }
-        } else {
-            popup.remove();
-        }
-    }
-
-    // function displayPopEat(event) {
-    //     if (event.features.length > 0) {
-    //         const vars = event.features[0].variables;
-    //         // console.log(vars);
-    //         if (typeof vars.name !== 'undefined') {
-    //             console.log(vars.name.value);
-    //             popup.setHTML(`
-    //                 <div>
-    //                     <h3 class ="h3">${vars.name.value}</h3>
-    //                     <p class="description open-sans">Website: ${vars.addrs.value}</h3>
-    //                 </div>
-    //             `);
-    //
-    //             const lon = vars.xlon.value;
-    //             const lat = vars.ylat.value;
-    //
-    //             popup.setLngLat([lon, lat]);
-    //             if (!popup.isOpen()) {
-    //                 popup.addTo(map);
-    //             }
-    //         }
-    //     } else {
-    //         popup.remove();
-    //     }
-    // }
-
-    // DISPLAYS THE NAME OF THE INSTITUTION IN THE TOP RIGHT BOX/CORNER ON HOVER
-    function displayName(event) {
-        let content = '';
-        for (let feature of event.features) {
-                content += `
-                <div class="container">
-                    <h3 class="h3">${feature.variables.education_center_name.value}</h3>
-                </div>
-                `;
-        }
-        document.getElementById('content').innerHTML = content;
-    }
-
-    // DISPLAYS THE NAME OF THE EATERY IN THE TOP RIGHT BOX/CORNER ON HOVER
-    function displayEatery(event) {
-        let content = '';
-        for (let feature of event.features) {
-            content += `
-                <div class="container">
-                    <h3 class="h3">${feature.variables.name.value}</h3>
-                </div>
-                `;
-        }
-        document.getElementById('content').innerHTML = content;
-    }
 
     document.getElementById('reset').addEventListener('click', function () {
         map.flyTo({

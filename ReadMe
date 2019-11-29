@@ -10,41 +10,21 @@ Tasks:
 - Layers panel
 - Legend
 - search query
-- add a reset zoom button that zooms back out to the center and default of the map
+
 
 Problems:
-- popup is at the location of click instead of location of Institution
 - Icons are pretty small
     - when you hover it should expand
     - when you click and it zooms in, it should keep
--for some reason it is still adding in the usls at the end of the link... need to fix this somehow
+-for some reason it is still adding in the urls at the end of the link... need to fix this somehow
     - i think it has to do with the url formatting; needs to begin with `http`
+- popups are dependant on the order the layers are added to the map
+    - eateries will show up if eateries is added to the map last
+    - ^same with PSE
 
 
-URL Current Workspace
-https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-click
-https://carto.com/developers/carto-vl/examples/#example-scaled-width
-https://carto.com/developers/carto-vl/examples/#example-feature-click
-https://carto.com/developers/carto-vl/examples/#example-multi-layer-interactivitiy
-https://carto.com/developers/carto-vl/examples/#example-interactive-based-filter
-https://sagerydaer.carto.com/builder/8d1d559f-4bd8-4328-b2cd-171538dd8943/layer/b38abd09-d0bf-45ec-a973-9826f39a2400/style
-https://sagerydaer.carto.com/dataset/export_output_2
-https://carto.com/developers/carto-vl/reference/#cartointeractivity
-https://www.youtube.com/watch?v=iqurYVWg7-g
-https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_filter_list
-https://sagerydaer.carto.com/dashboard
-https://sagerydaer.carto.com/builder/8d1d559f-4bd8-4328-b2cd-171538dd8943
-https://www.google.com/search?q=javascript+zoom+map+on+click&rlz=1C1GIWA_enCA673CA673&oq=javascript+zoom+map+on+click&aqs=chrome..69i57j33l7.5405j0j9&sourceid=chrome&ie=UTF-8
-https://community.esri.com/thread/177400
-https://gis.stackexchange.com/questions/147052/leaflet-js-map-pan-too-and-zoom-in-on-point
-https://developer.here.com/api-explorer/maps-js/markers/zoom-to-set-of-markers
-https://community.esri.com/thread/177400
-https://www.google.com/search?q=map.centerAndZoom&rlz=1C1GIWA_enCA673CA673&oq=map.centerAndZoom&aqs=chrome..69i57&sourceid=chrome&ie=UTF-8
-https://developers.arcgis.com/javascript/3/jsapi/featurelayer-amd.html#event-click
-https://developers.arcgis.com/javascript/3/jsapi/map-amd.html#centerandzoom
-https://developers.arcgis.com/javascript/3/jssamples/index.html#analysis
-https://tools.dathost.net/#alpha=255/color=5/color_b=0/color_r=0/color_g=255/dot=1/gap=0/size=0/style=4/usealpha=1/thickness=2/outline=0/outline_draw=0
-https://www.google.com/search?q=arcgis+api+with+carto&rlz=1C1GIWA_enCA673CA673&oq=arcgis+api+with+carto&aqs=chrome..69i57j33l2.6545j0j1&sourceid=chrome&ie=UTF-8
-https://carto.com/integrations/arcgis/
-https://carto.com/blog/esri-and-cartodb-together/
-http://bl.ocks.org/ramiroaznar/869b9f2de099a49af10953f214d441e7
+Done:
+    tasks:
+        - add a reset zoom button that zooms back out to the center and default of the map
+    bugs
+        - popup is at the location of click instead of location of Institution (FIXED)
